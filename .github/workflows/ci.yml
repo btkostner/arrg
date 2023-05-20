@@ -133,6 +133,7 @@ jobs:
         with:
           fail_on_error: true
           filter_mode: nofilter
+          hadolint_flags: --config .github/linters/.hadolint.yaml
           reporter: ${{ github.event_name == 'pull_request' && 'github-pr-review' || 'local' }}
 
   Lint_Doctor:
@@ -194,26 +195,6 @@ jobs:
           fail_on_error: true
           filter_mode: nofilter
           markdownlint_flags: -c .github/linters/.markdown-lint.yml .
-          reporter: ${{ github.event_name == 'pull_request' && 'github-pr-review' || 'local' }}
-
-  Lint_Misspell:
-    name: Lint (Misspell)
-    permissions:
-      checks: write
-      contents: read
-      pull-requests: write
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Lint
-        uses: reviewdog/action-misspell@v1
-        with:
-          fail_on_error: true
-          filter_mode: nofilter
-          locale: US
           reporter: ${{ github.event_name == 'pull_request' && 'github-pr-review' || 'local' }}
 
   Lint_Shellcheck:
