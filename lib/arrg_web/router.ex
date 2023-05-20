@@ -18,6 +18,24 @@ defmodule ArrgWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    get "/movies", PageController, :home
+    get "/shows", PageController, :home
+    get "/music", PageController, :home
+    get "/statistics", PageController, :home
+
+    live_session :settings,
+      on_mount: [
+        {ArrgWeb.RequestPathHook, :on_mount}
+      ] do
+      live "/settings", SettingsLive.Index, :index
+
+      live "/settings/storage", StorageSettingsLive.Index, :index
+      live "/settings/storage/new", StorageSettingsLive.Index, :new
+      live "/settings/storage/:name/edit", StorageSettingsLive.Index, :edit
+
+      live "/settings/storage/:name", StorageSettingsLive.Show, :show
+      live "/settings/storage/:name/show/edit", StorageSettingsLive.Show, :edit
+    end
   end
 
   # Other scopes may use custom stacks.

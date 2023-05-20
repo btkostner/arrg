@@ -16,8 +16,9 @@ defmodule ArrgWeb.CoreComponents do
   """
   use Phoenix.Component
 
-  alias Phoenix.LiveView.JS
   import ArrgWeb.Gettext
+
+  alias Phoenix.LiveView.JS
 
   @doc """
   Renders a modal.
@@ -50,7 +51,7 @@ defmodule ArrgWeb.CoreComponents do
       data-cancel={JS.exec(@on_cancel, "phx-remove")}
       class="relative z-50 hidden"
     >
-      <div id={"#{@id}-bg"} class="bg-zinc-50/90 fixed inset-0 transition-opacity" aria-hidden="true" />
+      <div id={"#{@id}-bg"} class="bg-gray-900/90 fixed inset-0 transition-opacity" aria-hidden="true" />
       <div
         class="fixed inset-0 overflow-y-auto"
         aria-labelledby={"#{@id}-title"}
@@ -66,13 +67,13 @@ defmodule ArrgWeb.CoreComponents do
               phx-window-keydown={JS.exec("data-cancel", to: "##{@id}")}
               phx-key="escape"
               phx-click-away={JS.exec("data-cancel", to: "##{@id}")}
-              class="shadow-zinc-700/10 ring-zinc-700/10 relative hidden rounded-2xl bg-white p-14 shadow-lg ring-1 transition"
+              class="shadow-gray-700/10 ring-gray-500/10 relative hidden rounded-2xl border-2 border-gray-600 bg-gray-900 p-14 shadow-lg ring-1 transition"
             >
-              <div class="absolute top-6 right-5">
+              <div class="absolute top-5 right-5 text-gray-100">
                 <button
                   phx-click={JS.exec("data-cancel", to: "##{@id}")}
                   type="button"
-                  class="-m-3 flex-none p-3 opacity-20 hover:opacity-40"
+                  class="-m-3 flex-none p-3 opacity-80 hover:opacity-40"
                   aria-label={gettext("close")}
                 >
                   <.icon name="hero-x-mark-solid" class="h-5 w-5" />
@@ -100,8 +101,9 @@ defmodule ArrgWeb.CoreComponents do
   attr :id, :string, default: "flash", doc: "the optional id of flash container"
   attr :flash, :map, default: %{}, doc: "the map of flash messages to display"
   attr :title, :string, default: nil
-  attr :kind, :atom, values: [:info, :error], doc: "used for styling and flash lookup"
+  attr :kind, :atom, values: [:info, :success, :error], doc: "used for styling and flash lookup"
   attr :rest, :global, doc: "the arbitrary HTML attributes to add to the flash container"
+  attr :hidden, :boolean, default: false
 
   slot :inner_block, doc: "the optional inner block that renders the flash message"
 
@@ -110,24 +112,54 @@ defmodule ArrgWeb.CoreComponents do
     <div
       :if={msg = render_slot(@inner_block) || Phoenix.Flash.get(@flash, @kind)}
       id={@id}
-      phx-click={JS.push("lv:clear-flash", value: %{key: @kind}) |> hide("##{@id}")}
       role="alert"
       class={[
-        "fixed top-2 right-2 w-80 sm:w-96 z-50 rounded-lg p-3 ring-1",
-        @kind == :info && "bg-emerald-50 text-emerald-800 ring-emerald-500 fill-cyan-900",
-        @kind == :error && "bg-rose-50 text-rose-900 shadow-md ring-rose-500 fill-rose-900"
+        "pointer-events-auto w-full max-w-sm overflow-hidden rounded-lg bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5",
+        @kind == :success && "bg-emerald-900 text-emerald-800 ring-emerald-500 fill-cyan-900",
+        @kind == :error && "bg-rose-800 text-rose-50 shadow-md ring-rose-500 fill-rose-50",
+        @hidden && "hidden"
       ]}
+      phx-mounted={
+        not @hidden &&
+          JS.show(
+            transition:
+              {"transform ease-out duration-300 transition", "translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2",
+               "translate-y-0 opacity-100 sm:translate-x-0"},
+            time: 300
+          )
+      }
       {@rest}
     >
-      <p :if={@title} class="flex items-center gap-1.5 text-sm font-semibold leading-6">
-        <.icon :if={@kind == :info} name="hero-information-circle-mini" class="h-4 w-4" />
-        <.icon :if={@kind == :error} name="hero-exclamation-circle-mini" class="h-4 w-4" />
-        <%= @title %>
-      </p>
-      <p class="mt-2 text-sm leading-5"><%= msg %></p>
-      <button type="button" class="group absolute top-1 right-1 p-2" aria-label={gettext("close")}>
-        <.icon name="hero-x-mark-solid" class="h-5 w-5 opacity-40 group-hover:opacity-70" />
-      </button>
+      <div class="p-4">
+        <div class="flex items-start">
+          <div class="flex-shrink-0">
+            <.icon :if={@kind == :info} name="hero-information-circle-mini" class="h-6 w-6 text-blue-400" />
+            <.icon :if={@kind == :success} name="hero-check-circle-mini" class="h-6 w-6 text-green-400" />
+            <.icon :if={@kind == :error} name="hero-exclamation-circle-mini" class="h-6 w-6 text-rose-100" />
+          </div>
+          <div class="ml-3 w-0 flex-1 pt-0.5">
+            <p :if={@title} class="text-sm font-medium text-gray-50"><%= @title %></p>
+            <p class="mt-1 text-sm text-gray-100"><%= msg %></p>
+          </div>
+          <div class="ml-4 flex flex-shrink-0">
+            <button
+              type="button"
+              class="inline-flex rounded-md text-gray-200 hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-800 focus:ring-offset-2"
+              phx-click={
+                JS.push("lv:clear-flash", value: %{key: @kind})
+                |> JS.hide(
+                  to: "##{@id}",
+                  transition: {"transition ease-in duration-100", "opacity-100", "opacity-0"},
+                  time: 100
+                )
+              }
+            >
+              <span class="sr-only"><%= gettext("Close") %></span>
+              <.icon name="hero-x-mark-solid" class="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
     """
   end
@@ -138,23 +170,28 @@ defmodule ArrgWeb.CoreComponents do
   ## Examples
 
       <.flash_group flash={@flash} />
+
   """
   attr :flash, :map, required: true, doc: "the map of flash messages"
 
   def flash_group(assigns) do
     ~H"""
-    <.flash kind={:info} title="Success!" flash={@flash} />
-    <.flash kind={:error} title="Error!" flash={@flash} />
-    <.flash
-      id="disconnected"
-      kind={:error}
-      title="We can't find the internet"
-      phx-disconnected={show("#disconnected")}
-      phx-connected={hide("#disconnected")}
-      hidden
-    >
-      Attempting to reconnect <.icon name="hero-arrow-path" class="ml-1 h-3 w-3 animate-spin" />
-    </.flash>
+    <div aria-live="assertive" class="pointer-events-none fixed inset-0 z-50 flex items-end px-4 py-6 sm:items-start sm:p-6">
+      <div class="flex w-full flex-col items-center space-y-4 sm:items-end">
+        <.flash kind={:info} title="Success!" flash={@flash} />
+        <.flash kind={:error} title="Error!" flash={@flash} />
+        <.flash
+          id="disconnected"
+          kind={:error}
+          title="We can't find the internet"
+          phx-disconnected={show("#disconnected")}
+          phx-connected={hide("#disconnected")}
+          hidden
+        >
+          Attempting to reconnect
+        </.flash>
+      </div>
+    </div>
     """
   end
 
@@ -184,7 +221,7 @@ defmodule ArrgWeb.CoreComponents do
   def simple_form(assigns) do
     ~H"""
     <.form :let={f} for={@for} as={@as} {@rest}>
-      <div class="mt-10 space-y-8 bg-white">
+      <div class="mt-10 space-y-8">
         <%= render_slot(@inner_block, f) %>
         <div :for={action <- @actions} class="mt-2 flex items-center justify-between gap-6">
           <%= render_slot(action, f) %>
@@ -203,25 +240,61 @@ defmodule ArrgWeb.CoreComponents do
       <.button phx-click="go" class="ml-2">Send!</.button>
   """
   attr :type, :string, default: nil
+  attr :navigate, :any, default: nil
+  attr :variation, :string, values: ~w(contained outlined text), default: "contained"
+  attr :size, :string, values: ~w(sm md lg), default: "md"
   attr :class, :string, default: nil
   attr :rest, :global, include: ~w(disabled form name value)
 
   slot :inner_block, required: true
 
-  def button(assigns) do
+  def button(%{navigate: nil} = assigns) do
+    assigns = button_classes(assigns)
+
     ~H"""
-    <button
-      type={@type}
-      class={[
-        "phx-submit-loading:opacity-75 rounded-lg bg-zinc-900 hover:bg-zinc-700 py-2 px-3",
-        "text-sm font-semibold leading-6 text-white active:text-white/80",
-        @class
-      ]}
-      {@rest}
-    >
+    <button type={@type} class={[@default_class, @variation_class, @size_class, @class]} {@rest}>
       <%= render_slot(@inner_block) %>
     </button>
     """
+  end
+
+  def button(assigns) do
+    assigns = button_classes(assigns)
+
+    ~H"""
+    <.link navigate={@navigate} class={["inline-block", @default_class, @variation_class, @size_class, @class]} {@rest}>
+      <%= render_slot(@inner_block) %>
+    </.link>
+    """
+  end
+
+  defp button_classes(assigns) do
+    assigns
+    |> Map.put(:default_class, "phx-submit-loading:opacity-75 inline-flex gap-x-2 items-center")
+    |> Map.put_new_lazy(:variation_class, fn ->
+      case assigns.variation do
+        "contained" ->
+          "border-2 border-gray-700 bg-gray-700 hover:border-gray-600 hover:bg-gray-600 text-white active:text-white/80"
+
+        "outlined" ->
+          "border-2 border-gray-700 hover:border-gray-600 hover:bg-gray-600 text-white active:text-white/80"
+
+        "text" ->
+          "border-2 border-transparent hover:border-gray-600 hover:bg-gray-600 text-gray-400 hover:text-white active:text-white/80"
+      end
+    end)
+    |> Map.put_new_lazy(:size_class, fn ->
+      case assigns.size do
+        "lg" ->
+          ""
+
+        "md" ->
+          "rounded-lg py-2 px-3 text-sm font-semibold leading-6"
+
+        "sm" ->
+          "rounded-md py-1 px-2 text-sm font-semibold leading-6"
+      end
+    end)
   end
 
   @doc """
@@ -246,8 +319,7 @@ defmodule ArrgWeb.CoreComponents do
     values: ~w(checkbox color date datetime-local email file hidden month number password
                range radio search select tel text textarea time url week)
 
-  attr :field, Phoenix.HTML.FormField,
-    doc: "a form field struct retrieved from the form, for example: @form[:email]"
+  attr :field, Phoenix.HTML.FormField, doc: "a form field struct retrieved from the form, for example: @form[:email]"
 
   attr :errors, :list, default: []
   attr :checked, :boolean, doc: "the checked flag for checkbox inputs"
@@ -255,8 +327,7 @@ defmodule ArrgWeb.CoreComponents do
   attr :options, :list, doc: "the options to pass to Phoenix.HTML.Form.options_for_select/2"
   attr :multiple, :boolean, default: false, doc: "the multiple flag for select inputs"
 
-  attr :rest, :global,
-    include: ~w(autocomplete cols disabled form list max maxlength min minlength
+  attr :rest, :global, include: ~w(autocomplete cols disabled form list max maxlength min minlength
                 pattern placeholder readonly required rows size step)
 
   slot :inner_block
@@ -271,8 +342,7 @@ defmodule ArrgWeb.CoreComponents do
   end
 
   def input(%{type: "checkbox", value: value} = assigns) do
-    assigns =
-      assign_new(assigns, :checked, fn -> Phoenix.HTML.Form.normalize_value("checkbox", value) end)
+    assigns = assign_new(assigns, :checked, fn -> Phoenix.HTML.Form.normalize_value("checkbox", value) end)
 
     ~H"""
     <div phx-feedback-for={@name}>
@@ -364,7 +434,7 @@ defmodule ArrgWeb.CoreComponents do
 
   def label(assigns) do
     ~H"""
-    <label for={@for} class="block text-sm font-semibold leading-6 text-zinc-800">
+    <label for={@for} class="block text-sm font-semibold leading-6 text-gray-200">
       <%= render_slot(@inner_block) %>
     </label>
     """
@@ -391,20 +461,26 @@ defmodule ArrgWeb.CoreComponents do
 
   slot :inner_block, required: true
   slot :subtitle
-  slot :actions
+
+  slot :action, doc: "the slot for showing user actions in the header"
 
   def header(assigns) do
     ~H"""
-    <header class={[@actions != [] && "flex items-center justify-between gap-6", @class]}>
-      <div>
-        <h1 class="text-lg font-semibold leading-8 text-zinc-800">
+    <header class={["md:flex md:items-center md:justify-between", @class]}>
+      <div class="min-w-0 flex-1">
+        <h1 class="text-2xl font-bold leading-7 text-white sm:truncate sm:text-3xl sm:tracking-tight">
           <%= render_slot(@inner_block) %>
         </h1>
-        <p :if={@subtitle != []} class="mt-2 text-sm leading-6 text-zinc-600">
+        <p :if={@subtitle != []} class="mt-2 text-sm text-gray-500">
           <%= render_slot(@subtitle) %>
         </p>
       </div>
-      <div class="flex-none"><%= render_slot(@actions) %></div>
+
+      <div class="mt-4 flex content-center gap-x-4 md:mt-0 md:ml-4">
+        <%= for action <- @action do %>
+          <%= render_slot(action) %>
+        <% end %>
+      </div>
     </header>
     """
   end
@@ -441,47 +517,58 @@ defmodule ArrgWeb.CoreComponents do
       end
 
     ~H"""
-    <div class="overflow-y-auto px-4 sm:overflow-visible sm:px-0">
-      <table class="w-[40rem] mt-11 sm:w-full">
-        <thead class="text-sm text-left leading-6 text-zinc-500">
-          <tr>
-            <th :for={col <- @col} class="p-0 pr-6 pb-4 font-normal"><%= col[:label] %></th>
-            <th class="relative p-0 pb-4"><span class="sr-only"><%= gettext("Actions") %></span></th>
-          </tr>
-        </thead>
-        <tbody
-          id={@id}
-          phx-update={match?(%Phoenix.LiveView.LiveStream{}, @rows) && "stream"}
-          class="relative divide-y divide-zinc-100 border-t border-zinc-200 text-sm leading-6 text-zinc-700"
-        >
-          <tr :for={row <- @rows} id={@row_id && @row_id.(row)} class="group hover:bg-zinc-50">
-            <td
-              :for={{col, i} <- Enum.with_index(@col)}
-              phx-click={@row_click && @row_click.(row)}
-              class={["relative p-0", @row_click && "hover:cursor-pointer"]}
-            >
-              <div class="block py-4 pr-6">
-                <span class="absolute -inset-y-px right-0 -left-4 group-hover:bg-zinc-50 sm:rounded-l-xl" />
-                <span class={["relative", i == 0 && "font-semibold text-zinc-900"]}>
-                  <%= render_slot(col, @row_item.(row)) %>
-                </span>
+    <table class="mt-6 w-full whitespace-nowrap text-left">
+      <thead class="border-white/10 border-b text-sm leading-6 text-white">
+        <tr>
+          <th
+            :for={{col, i} <- Enum.with_index(@col)}
+            class={[
+              i === 0 && "pl-4 pr-8",
+              i !== 0 && "hidden sm:table-cell",
+              "py-2 sm:pl-6 lg:pl-8 font-semibold"
+            ]}
+            scope="col"
+          >
+            <%= col[:label] %>
+          </th>
+          <th :if={@action != []} class="py-2 pr-4 pl-0 text-right font-semibold sm:table-cell sm:pr-6 lg:pr-8" scope="col">
+            <span class="sr-only"><%= gettext("Actions") %></span>
+          </th>
+        </tr>
+      </thead>
+      <tbody id={@id} phx-update={match?(%Phoenix.LiveView.LiveStream{}, @rows) && "stream"} class="divide-white/5 divide-y">
+        <tr :for={row <- @rows} id={@row_id && @row_id.(row)} class="hover:bg-gray-800">
+          <td
+            :for={{col, i} <- Enum.with_index(@col)}
+            phx-click={@row_click && @row_click.(row)}
+            class={[
+              i === 0 && "pl-4 pr-8",
+              i !== 0 && "hidden sm:table-cell",
+              @row_click && "hover:cursor-pointer",
+              "py-4 sm:pl-6 lg:pl-8"
+            ]}
+          >
+            <div class="flex items-center gap-x-4">
+              <div class={[
+                i === 0 && "truncate font-medium text-white",
+                i !== 0 && "hidden text-gray-400 sm:table-cell sm:pr-6 lg:pr-8",
+                "text-sm leading-6"
+              ]}>
+                <%= render_slot(col, @row_item.(row)) %>
               </div>
-            </td>
-            <td :if={@action != []} class="relative w-14 p-0">
-              <div class="relative whitespace-nowrap py-4 text-right text-sm font-medium">
-                <span class="absolute -inset-y-px -right-4 left-0 group-hover:bg-zinc-50 sm:rounded-r-xl" />
-                <span
-                  :for={action <- @action}
-                  class="relative ml-4 font-semibold leading-6 text-zinc-900 hover:text-zinc-700"
-                >
-                  <%= render_slot(action, @row_item.(row)) %>
-                </span>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+            </div>
+          </td>
+          <td
+            :if={@action != []}
+            class="relative space-x-2 whitespace-nowrap py-4 pr-4 pl-0 text-right text-sm leading-6 text-gray-400 sm:pr-6 lg:pr-8"
+          >
+            <%= for action <- @action do %>
+              <%= render_slot(action, @row_item.(row)) %>
+            <% end %>
+          </td>
+        </tr>
+      </tbody>
+    </table>
     """
   end
 
@@ -495,17 +582,22 @@ defmodule ArrgWeb.CoreComponents do
         <:item title="Views"><%= @post.views %></:item>
       </.list>
   """
+  attr :class, :string, default: ""
+  attr :rest, :global
+
   slot :item, required: true do
     attr :title, :string, required: true
   end
 
   def list(assigns) do
     ~H"""
-    <div class="mt-14">
-      <dl class="-my-4 divide-y divide-zinc-100">
-        <div :for={item <- @item} class="flex gap-4 py-4 text-sm leading-6 sm:gap-8">
-          <dt class="w-1/4 flex-none text-zinc-500"><%= item.title %></dt>
-          <dd class="text-zinc-700"><%= render_slot(item) %></dd>
+    <div class={["mt-6", @class]} {@rest}>
+      <dl class="divide-white/10 divide-y">
+        <div :for={item <- @item} class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+          <dt class="text-sm font-medium leading-6 text-white"><%= item.title %></dt>
+          <dd class="mt-1 text-sm leading-6 text-gray-400 sm:col-span-2 sm:mt-0">
+            <%= render_slot(item) %>
+          </dd>
         </div>
       </dl>
     </div>
@@ -519,20 +611,17 @@ defmodule ArrgWeb.CoreComponents do
 
       <.back navigate={~p"/posts"}>Back to posts</.back>
   """
-  attr :navigate, :any, required: true
+  attr :navigate, :any
+  attr :rest, :global
+
   slot :inner_block, required: true
 
   def back(assigns) do
     ~H"""
-    <div class="mt-16">
-      <.link
-        navigate={@navigate}
-        class="text-sm font-semibold leading-6 text-zinc-900 hover:text-zinc-700"
-      >
-        <.icon name="hero-arrow-left-solid" class="h-3 w-3" />
-        <%= render_slot(@inner_block) %>
-      </.link>
-    </div>
+    <.button navigate={@navigate} variation="outlined" {@rest}>
+      <.icon name="hero-arrow-left-solid" class="h-4 w-4" />
+      <%= render_slot(@inner_block) %>
+    </.button>
     """
   end
 
@@ -569,8 +658,7 @@ defmodule ArrgWeb.CoreComponents do
     JS.show(js,
       to: selector,
       transition:
-        {"transition-all transform ease-out duration-300",
-         "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95",
+        {"transition-all transform ease-out duration-300", "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95",
          "opacity-100 translate-y-0 sm:scale-100"}
     )
   end
@@ -580,8 +668,7 @@ defmodule ArrgWeb.CoreComponents do
       to: selector,
       time: 200,
       transition:
-        {"transition-all transform ease-in duration-200",
-         "opacity-100 translate-y-0 sm:scale-100",
+        {"transition-all transform ease-in duration-200", "opacity-100 translate-y-0 sm:scale-100",
          "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"}
     )
   end

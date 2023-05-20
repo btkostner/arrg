@@ -1,0 +1,56 @@
+<ArrgWeb.NavigationComponents.secondary_nav_bar assigns={assigns}>
+  <:item navigate={~p"/settings"} exact={true}>Settings</:item>
+  <:item navigate={~p"/settings/storage"}>Storage</:item>
+</ArrgWeb.NavigationComponents.secondary_nav_bar>
+
+<.header class="px-4 py-4 sm:px-8">
+  Storage: <%= @file_system.name %>
+  <:subtitle>
+    This is a <%= @file_system.implementation.__struct__.friendly_name() |> String.downcase() %> file system based storage.
+  </:subtitle>
+
+  <:action>
+    <.back navigate={~p"/settings/storage"}>
+      Back to storage
+    </.back>
+  </:action>
+
+  <:action>
+    <.button navigate={~p"/settings/storage/#{@file_system}/show/edit"} phx-click={JS.push_focus()}>
+      Edit storage
+    </.button>
+  </:action>
+</.header>
+
+<.list class="px-4 py-4 sm:px-8">
+  <:item title="Name"><%= @file_system.name %></:item>
+  <:item title="Type"><%= @file_system.type %></:item>
+  <:item title="Implementation">
+    <%= @file_system.implementation.__struct__.friendly_name() %>
+  </:item>
+
+  <:item
+    :for={field <- @file_system.implementation.__struct__.__schema__(:fields)}
+    title={field |> to_string() |> String.capitalize()}
+  >
+    <%= Map.get(@file_system.implementation, field, "") %>
+  </:item>
+
+  <:item title="Created At"><%= @file_system.inserted_at %></:item>
+  <:item title="Updated At"><%= @file_system.updated_at %></:item>
+</.list>
+
+<.modal
+  :if={@live_action == :edit}
+  id="file-system-modal"
+  show
+  on_cancel={JS.patch(~p"/settings/storage/#{@file_system}")}
+>
+  <.live_component
+    module={ArrgWeb.StorageSettingsLive.FormComponent}
+    id={@file_system.name}
+    title={@page_title}
+    action={@live_action}
+    file_system={@file_system}
+  />
+</.modal>

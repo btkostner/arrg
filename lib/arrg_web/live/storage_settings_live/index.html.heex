@@ -1,0 +1,76 @@
+<ArrgWeb.NavigationComponents.secondary_nav_bar assigns={assigns}>
+  <:item navigate={~p"/settings"} exact={true}>Settings</:item>
+  <:item navigate={~p"/settings/storage"}>Storage</:item>
+</ArrgWeb.NavigationComponents.secondary_nav_bar>
+
+<.header class="px-4 py-4 sm:px-8">
+  Storage
+  <:subtitle>This represents every folder that Arrg monitors and manages.</:subtitle>
+
+  <:action>
+    <.button navigate={~p"/settings/storage/new"}>
+      New storage
+    </.button>
+  </:action>
+</.header>
+
+<%= if Enum.count(@file_systems) === 0 do %>
+  <ArrgWeb.LayoutComponents.blank_space icon="hero-folder">
+    No storage has been configured
+    <:subtitle>Please add storage for Arrg to start managing.</:subtitle>
+  </ArrgWeb.LayoutComponents.blank_space>
+<% else %>
+  <.table
+    id="storage"
+    rows={@file_systems}
+    row_id={fn file_system -> "file-system-" <> URI.encode(file_system.name) end}
+    row_click={fn file_system -> JS.navigate(~p"/settings/storage/#{file_system}") end}
+  >
+    <:col :let={file_system} label="Name">
+      <%= file_system.name %>
+    </:col>
+
+    <:col :let={file_system} label="Type">
+      <%= file_system.type |> to_string() |> String.capitalize() %>
+    </:col>
+
+    <:col :let={file_system} label="Implementation">
+      <%= file_system.implementation.__struct__.friendly_name() |> String.capitalize() %>
+    </:col>
+
+    <:action :let={file_system}>
+      <div class="sr-only">
+        <.button navigate={~p"/settings/storage/#{file_system}"} variation="text" size="sm">
+          Show
+        </.button>
+      </div>
+    </:action>
+
+    <:action :let={file_system}>
+      <.button navigate={~p"/settings/storage/#{file_system}/edit"} variation="text" size="sm">
+        Edit
+      </.button>
+    </:action>
+
+    <:action :let={file_system}>
+      <.button
+        phx-click={JS.push("delete", value: %{name: file_system.name})}
+        data-confirm="Are you sure?"
+        variation="text"
+        size="sm"
+      >
+        Delete
+      </.button>
+    </:action>
+  </.table>
+<% end %>
+
+<.modal :if={@live_action in [:new, :edit]} id="file-system-modal" show on_cancel={JS.patch(~p"/settings/storage")}>
+  <.live_component
+    module={ArrgWeb.StorageSettingsLive.FormComponent}
+    id={@file_system.name || :new}
+    title={@page_title}
+    action={@live_action}
+    file_system={@file_system}
+  />
+</.modal>

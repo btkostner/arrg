@@ -1,4 +1,8 @@
 defmodule ArrgWeb.Layouts do
+  @moduledoc """
+  Templates for the layout of the application.
+  """
+
   use ArrgWeb, :html
 
   embed_templates "layouts/*"
@@ -6,7 +10,7 @@ defmodule ArrgWeb.Layouts do
   def show_mobile_navigation(js \\ %JS{}) do
     js
     |> JS.remove_class("hidden opacity-0",
-      to: "#mobile-navigation",
+      to: "#mobile-navigation"
     )
     |> JS.show(
       to: "#mobile-navigation-backdrop",
@@ -45,11 +49,19 @@ defmodule ArrgWeb.Layouts do
     |> JS.remove_class("overflow-hidden", to: "body")
   end
 
-  def current_link?(%{request_path: request_path} = conn, path, opts \\ []) do
+  def current_link?(assigns, path, opts \\ [])
+
+  def current_link?(%{conn: conn}, path, opts),
+    do: current_link?(conn, path, opts)
+
+  def current_link?(%{request_path: request_path}, path, opts),
+    do: current_link?(request_path, path, opts)
+
+  def current_link?(current_path, path, opts) do
     if Keyword.get(opts, :exact, false) do
-      String.starts_with?(request_path, path)
+      current_path == path
     else
-      request_path == path
+      String.starts_with?(current_path, path)
     end
   end
 end

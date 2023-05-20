@@ -83,6 +83,8 @@ defmodule ArrgWeb do
     quote do
       # HTML escaping functionality
       import Phoenix.HTML
+      # Polymorphic embeds HTML form helpers
+      import PolymorphicEmbed.HTML.Form
       # Core UI components and translation
       import ArrgWeb.CoreComponents
       import ArrgWeb.Gettext

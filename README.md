@@ -1,15 +1,35 @@
 # Arrg
 
-To start your Phoenix server:
+Arrg is an Elixir media manager for movies, tv shows, and music.
 
-  * Run `mix setup` to install and setup dependencies
-  * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+## Features
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+- [ ] Watches your media files
+- [ ] Organizes, renames, and retags your files
+- [ ] Can remove unrecognized files
+- [ ] Plugin architecture
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+## Running
 
-## Learn more
+The easiest way to run Arrg is with `docker`
+
+```sh
+docker run ghcr.io/btkostner/arrg:edge
+```
+
+## Development
+
+You'll need a current version of `elixir` installed and working on your system.
+
+1) Clone the repository
+
+2) Install dependencies via `mix deps.get`
+
+3) Run the development server via `mix phx.server`
+
+4) Open your browser to [`localhost:4000`](http://localhost:4000)
+
+### Learn more about Elixir and Phoenix
 
   * Official website: https://www.phoenixframework.org/
   * Guides: https://hexdocs.pm/phoenix/overview.html
