@@ -3,6 +3,10 @@ defmodule ArrgWeb.RequestPathHook do
   Inserts the request path into the socket assigns.
   """
 
+  @doc """
+  Runs via Phoenix.LiveView on mount to add the current request path
+  to the socket.
+  """
   def on_mount(:on_mount, _params, _session, socket) do
     {:cont,
      Phoenix.LiveView.attach_hook(

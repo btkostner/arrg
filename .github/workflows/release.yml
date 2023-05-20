@@ -1,0 +1,55 @@
+---
+
+jobs:
+  Docs:
+    environment:
+      name: Docs
+      url: https://arrg.btkostner.io
+    permissions:
+      contents: read
+      id-token: write
+      pages: write
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Elixir
+        uses: ./.github/actions/setup-elixir
+
+      - name: Build Docs
+        run: mix docs
+
+      - name: Set CNAME
+        run: echo "arrg.btkostner.io" > ./doc/CNAME
+
+      - name: Upload Artifacts
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: ./doc
+
+      - name: Deploy
+        uses: actions/deploy-pages@v1
+
+  Please:
+    permissions:
+      contents: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Release Please
+        uses: google-github-actions/release-please-action@v3
+        with:
+          command: manifest
+          config-file: .release-please-config.json
+          manifest-file: .release-please-manifest.json
+          release-type: simple
+
+name: Release
+
+on:
+  push:
+    branches:
+      - main

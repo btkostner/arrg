@@ -1,0 +1,23 @@
+---
+
+jobs:
+  Lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Lint
+        uses: deepakputhraya/action-pr-title@v1.0.2
+        with:
+          allowed_prefixes: "fix,feat,chore,docs,perf,test"
+          min_length: 5
+          prefix_case_sensitive: true
+
+name: PR
+
+on:
+  pull_request:
+    types:
+      - edited
+      - opened
+      - reopened
+      - synchronize

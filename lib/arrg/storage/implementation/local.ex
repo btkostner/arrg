@@ -8,11 +8,19 @@ defmodule Arrg.Storage.LocalImplementation do
 
   import Ecto.Changeset
 
+  @type t :: %__MODULE__{
+          root: String.t()
+        }
+
   @primary_key false
   embedded_schema do
     field :root, :string
   end
 
+  @doc """
+  Returns an `Ecto.Changeset` for a local implementation configuration struct
+  and given attributes.
+  """
   @impl Arrg.Storage.ImplementationBehaviour
   def changeset(config, attrs) do
     config
@@ -20,9 +28,16 @@ defmodule Arrg.Storage.LocalImplementation do
     |> validate_required([:root])
   end
 
+  @doc """
+  Returns a friendly name for the local implementation.
+  """
   @impl Arrg.Storage.ImplementationBehaviour
   def friendly_name, do: "Local"
 
+  @doc """
+  Reads a given file from the local file system. Returns a stream
+  of data.
+  """
   @impl Arrg.Storage.ImplementationBehaviour
   def read(%{root: root}, path, _opts) do
     stream =
@@ -35,6 +50,9 @@ defmodule Arrg.Storage.LocalImplementation do
     e -> {:error, e}
   end
 
+  @doc """
+  Writes a stream of data to the local file system.
+  """
   @impl Arrg.Storage.ImplementationBehaviour
   def write(stream, %{root: root}, path, _opts) do
     full_path = Path.join(root, path)
@@ -44,7 +62,11 @@ defmodule Arrg.Storage.LocalImplementation do
     |> Stream.run()
   end
 
+  @doc """
+  Deletes a file from the local file system.
+  """
   @impl Arrg.Storage.ImplementationBehaviour
+  # sobelow_skip ["Traversal.FileModule"]
   def delete(%{root: root}, path, _opts) do
     root
     |> Path.join(path)

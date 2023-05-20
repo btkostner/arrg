@@ -14,12 +14,14 @@ config :arrg,
 # Configures the endpoint
 config :arrg, ArrgWeb.Endpoint,
   url: [host: "localhost"],
+  adapter: Bandit.PhoenixAdapter,
+  compress: false,
+  live_view: [signing_salt: "o5lIn4j9"],
+  pubsub_server: Arrg.PubSub,
   render_errors: [
     formats: [html: ArrgWeb.ErrorHTML, json: ArrgWeb.ErrorJSON],
     layout: false
-  ],
-  pubsub_server: Arrg.PubSub,
-  live_view: [signing_salt: "o5lIn4j9"]
+  ]
 
 # Configure esbuild (the version is required)
 config :esbuild,

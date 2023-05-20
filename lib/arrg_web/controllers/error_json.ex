@@ -1,4 +1,8 @@
 defmodule ArrgWeb.ErrorJSON do
+  @moduledoc """
+  A catch all module that renders error JSON for the application.
+  """
+
   # If you want to customize a particular status code,
   # you may add your own clauses, such as:
   #

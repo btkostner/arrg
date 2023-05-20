@@ -12,7 +12,7 @@ defmodule Arrg.Storage.FileSystem do
   @type t :: %__MODULE__{
           name: String.t(),
           type: atom(),
-          implementation: Arrg.Storage.LocalImplementation,
+          implementation: struct(),
           inserted_at: DateTime.t(),
           updated_at: DateTime.t()
         }

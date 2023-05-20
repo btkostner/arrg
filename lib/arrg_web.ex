@@ -17,8 +17,13 @@ defmodule ArrgWeb do
   those modules here.
   """
 
+  @doc """
+  Returns a list of all static files and directories that can
+  be served.
+  """
   def static_paths, do: ~w(assets fonts images favicon.ico robots.txt)
 
+  @doc false
   def router do
     quote do
       use Phoenix.Router, helpers: false
@@ -30,12 +35,14 @@ defmodule ArrgWeb do
     end
   end
 
+  @doc false
   def channel do
     quote do
       use Phoenix.Channel
     end
   end
 
+  @doc false
   def controller do
     quote do
       use Phoenix.Controller,
@@ -49,6 +56,7 @@ defmodule ArrgWeb do
     end
   end
 
+  @doc false
   def live_view do
     quote do
       use Phoenix.LiveView,
@@ -58,6 +66,7 @@ defmodule ArrgWeb do
     end
   end
 
+  @doc false
   def live_component do
     quote do
       use Phoenix.LiveComponent
@@ -66,6 +75,7 @@ defmodule ArrgWeb do
     end
   end
 
+  @doc false
   def html do
     quote do
       use Phoenix.Component
@@ -97,6 +107,7 @@ defmodule ArrgWeb do
     end
   end
 
+  @doc false
   def verified_routes do
     quote do
       use Phoenix.VerifiedRoutes,

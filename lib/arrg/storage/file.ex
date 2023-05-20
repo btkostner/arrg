@@ -9,11 +9,10 @@ defmodule Arrg.Storage.File do
 
   @type t :: %__MODULE__{
           file_system: Arrg.Storage.FileSystem.t(),
-          path: path(),
+          path: String.t(),
           inserted_at: DateTime.t(),
           updated_at: DateTime.t()
         }
-  @type path :: String.t()
 
   @primary_key false
   schema "storage_files" do
