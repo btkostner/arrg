@@ -1,4 +1,8 @@
 defmodule ArrgWeb.ErrorHTML do
+  @moduledoc """
+  A catch all module that renders error pages for the application.
+  """
+
   use ArrgWeb, :html
 
   # If you want to customize your error pages,

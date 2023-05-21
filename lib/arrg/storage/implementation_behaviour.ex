@@ -7,13 +7,13 @@ defmodule Arrg.Storage.ImplementationBehaviour do
 
   @type config :: struct()
 
-  @callback changeset(config(), Map.t()) :: Ecto.Changeset.t()
+  @callback changeset(config(), map()) :: Ecto.Changeset.t()
 
   @callback friendly_name() :: String.t()
 
-  @callback read(config(), File.path(), Keyword.t()) :: {:ok, Stream.t()} | {:error, any}
+  @callback read(config(), String.t(), Keyword.t()) :: {:ok, Enumerable.t()} | {:error, any}
 
-  @callback write(Stream.t(), config(), File.path(), Keyword.t()) :: :ok | {:error, any}
+  @callback write(Enumerable.t(), config(), String.t(), Keyword.t()) :: :ok | {:error, any}
 
-  @callback delete(config(), File.path(), Keyword.t()) :: :ok | {:error, any}
+  @callback delete(config(), String.t(), Keyword.t()) :: :ok | {:error, any}
 end

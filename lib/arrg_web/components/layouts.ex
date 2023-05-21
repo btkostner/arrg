@@ -7,6 +7,9 @@ defmodule ArrgWeb.Layouts do
 
   embed_templates "layouts/*"
 
+  @doc """
+  Toggles to show the mobile navigation menu.
+  """
   def show_mobile_navigation(js \\ %JS{}) do
     js
     |> JS.remove_class("hidden opacity-0",
@@ -28,6 +31,9 @@ defmodule ArrgWeb.Layouts do
     |> JS.focus_first(to: "#mobile-navigation")
   end
 
+  @doc """
+  Toggles to hide the mobile navigation menu.
+  """
   def hide_mobile_navigation(js \\ %JS{}) do
     js
     |> JS.add_class("hidden",
@@ -49,6 +55,11 @@ defmodule ArrgWeb.Layouts do
     |> JS.remove_class("overflow-hidden", to: "body")
   end
 
+  @doc """
+  Checks if the current path matches the given path. If the `:exact` option
+  is given, it will only match the exact path. Otherwise, it will match
+  any nested path as well.
+  """
   def current_link?(assigns, path, opts \\ [])
 
   def current_link?(%{conn: conn}, path, opts),

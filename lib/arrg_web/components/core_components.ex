@@ -11,8 +11,6 @@ defmodule ArrgWeb.CoreComponents do
   The default components use Tailwind CSS, a utility-first CSS framework.
   See the [Tailwind CSS documentation](https://tailwindcss.com) to learn
   how to customize them or feel free to swap in another framework altogether.
-
-  Icons are provided by [heroicons](https://heroicons.com). See `icon/1` for usage.
   """
   use Phoenix.Component
 
@@ -76,7 +74,7 @@ defmodule ArrgWeb.CoreComponents do
                   class="-m-3 flex-none p-3 opacity-80 hover:opacity-40"
                   aria-label={gettext("close")}
                 >
-                  <.icon name="hero-x-mark-solid" class="h-5 w-5" />
+                  <Heroicons.LiveView.icon name="x-mark" type="solid" class="h-5 w-5" />
                 </button>
               </div>
               <div id={"#{@id}-content"}>
@@ -133,9 +131,19 @@ defmodule ArrgWeb.CoreComponents do
       <div class="p-4">
         <div class="flex items-start">
           <div class="flex-shrink-0">
-            <.icon :if={@kind == :info} name="hero-information-circle-mini" class="h-6 w-6 text-blue-400" />
-            <.icon :if={@kind == :success} name="hero-check-circle-mini" class="h-6 w-6 text-green-400" />
-            <.icon :if={@kind == :error} name="hero-exclamation-circle-mini" class="h-6 w-6 text-rose-100" />
+            <Heroicons.LiveView.icon
+              :if={@kind == :info}
+              name="information-circle"
+              type="mini"
+              class="h-6 w-6 text-blue-400"
+            />
+            <Heroicons.LiveView.icon :if={@kind == :success} name="check-circle" type="mini" class="h-6 w-6 text-green-400" />
+            <Heroicons.LiveView.icon
+              :if={@kind == :error}
+              name="exclamation-circle"
+              type="mini"
+              class="h-6 w-6 text-rose-100"
+            />
           </div>
           <div class="ml-3 w-0 flex-1 pt-0.5">
             <p :if={@title} class="text-sm font-medium text-gray-50"><%= @title %></p>
@@ -155,7 +163,7 @@ defmodule ArrgWeb.CoreComponents do
               }
             >
               <span class="sr-only"><%= gettext("Close") %></span>
-              <.icon name="hero-x-mark-solid" class="h-5 w-5" />
+              <Heroicons.LiveView.icon name="x-mark" type="solid" class="h-5 w-5" />
             </button>
           </div>
         </div>
@@ -448,7 +456,7 @@ defmodule ArrgWeb.CoreComponents do
   def error(assigns) do
     ~H"""
     <p class="mt-3 flex gap-3 text-sm leading-6 text-rose-600 phx-no-feedback:hidden">
-      <.icon name="hero-exclamation-circle-mini" class="mt-0.5 h-5 w-5 flex-none" />
+      <Heroicons.LiveView.icon name="exclamation-circle" type="mini" class="mt-0.5 h-5 w-5 flex-none" />
       <%= render_slot(@inner_block) %>
     </p>
     """
@@ -619,36 +627,9 @@ defmodule ArrgWeb.CoreComponents do
   def back(assigns) do
     ~H"""
     <.button navigate={@navigate} variation="outlined" {@rest}>
-      <.icon name="hero-arrow-left-solid" class="h-4 w-4" />
+      <Heroicons.LiveView.icon name="arrow-left" type="mini" class="h-4 w-4" />
       <%= render_slot(@inner_block) %>
     </.button>
-    """
-  end
-
-  @doc """
-  Renders a [Hero Icon](https://heroicons.com).
-
-  Hero icons come in three styles – outline, solid, and mini.
-  By default, the outline style is used, but solid an mini may
-  be applied by using the `-solid` and `-mini` suffix.
-
-  You can customize the size and colors of the icons by setting
-  width, height, and background color classes.
-
-  Icons are extracted from your `assets/vendor/heroicons` directory and bundled
-  within your compiled app.css by the plugin in your `assets/tailwind.config.js`.
-
-  ## Examples
-
-      <.icon name="hero-x-mark-solid" />
-      <.icon name="hero-arrow-path" class="ml-1 w-3 h-3 animate-spin" />
-  """
-  attr :name, :string, required: true
-  attr :class, :string, default: nil
-
-  def icon(%{name: "hero-" <> _} = assigns) do
-    ~H"""
-    <span class={[@name, @class]} />
     """
   end
 

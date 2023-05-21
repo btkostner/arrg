@@ -1,4 +1,8 @@
 defmodule ArrgWeb.Endpoint do
+  @moduledoc """
+  A `Phoenix.Endpoint` instance for the Arrg application.
+  """
+
   use Phoenix.Endpoint, otp_app: :arrg
 
   # The session will be stored in the cookie and signed,
@@ -20,7 +24,7 @@ defmodule ArrgWeb.Endpoint do
   plug Plug.Static,
     at: "/",
     from: :arrg,
-    gzip: false,
+    gzip: Application.compile_env(:arrg, [ArrgWeb.Endpoint, :compress], false),
     only: ArrgWeb.static_paths()
 
   # Code reloading can be explicitly enabled under the

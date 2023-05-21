@@ -4,7 +4,6 @@ defmodule ArrgWeb.LayoutComponents do
   """
   use Phoenix.Component
 
-  import ArrgWeb.CoreComponents, only: [icon: 1]
   import ArrgWeb.Gettext
 
   @doc """
@@ -19,7 +18,7 @@ defmodule ArrgWeb.LayoutComponents do
   def blank_space(assigns) do
     ~H"""
     <div class="py-24 text-center">
-      <.icon name={@icon} class="mx-auto h-12 w-12 text-gray-700" />
+      <Heroicons.LiveView.icon name={@icon} type="solid" class="mx-auto h-12 w-12 text-gray-700" />
 
       <h3 class="mt-2 text-2xl font-bold leading-7 text-white sm:truncate sm:text-3xl sm:tracking-tight">
         <%= render_slot(@inner_block) %>
@@ -43,7 +42,7 @@ defmodule ArrgWeb.LayoutComponents do
   """
   def unimplemented_space(assigns) do
     ~H"""
-    <.blank_space icon="hero-exclamation-circle">
+    <.blank_space icon="exclamation-circle">
       <%= gettext("Unimplemented") %>
       <:subtitle><%= gettext("This feature is not yet implemented.") %></:subtitle>
     </.blank_space>

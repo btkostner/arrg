@@ -14,19 +14,21 @@ config :arrg,
 # Configures the endpoint
 config :arrg, ArrgWeb.Endpoint,
   url: [host: "localhost"],
+  adapter: Bandit.PhoenixAdapter,
+  compress: false,
+  live_view: [signing_salt: "o5lIn4j9"],
+  pubsub_server: Arrg.PubSub,
   render_errors: [
     formats: [html: ArrgWeb.ErrorHTML, json: ArrgWeb.ErrorJSON],
     layout: false
-  ],
-  pubsub_server: Arrg.PubSub,
-  live_view: [signing_salt: "o5lIn4j9"]
+  ]
 
 # Configure esbuild (the version is required)
 config :esbuild,
   version: "0.17.11",
   default: [
     args:
-      ~w(js/app.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
+      ~w(script/main.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
     cd: Path.expand("../assets", __DIR__),
     env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
   ]
@@ -37,8 +39,8 @@ config :tailwind,
   default: [
     args: ~w(
       --config=tailwind.config.js
-      --input=css/app.css
-      --output=../priv/static/assets/app.css
+      --input=style/main.css
+      --output=../priv/static/assets/main.css
     ),
     cd: Path.expand("../assets", __DIR__)
   ]

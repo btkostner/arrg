@@ -21,7 +21,7 @@ defmodule Arrg.Storage.Implementation do
   @doc """
   Reads a file from the file system.
   """
-  @spec read(FileSystem.t(), File.t() | File.path()) :: {:ok, Stream.t()} | {:error, any}
+  @spec read(FileSystem.t(), File.t() | String.t()) :: {:ok, Enumerable.t()} | {:error, any}
   def read(filesystem, file, opts \\ [])
 
   def read(%FileSystem{} = filesystem, %File{path: path}, opts),
@@ -33,7 +33,7 @@ defmodule Arrg.Storage.Implementation do
   @doc """
   Writes a stream to a file.
   """
-  @spec write(Stream.t(), FileSystem.t(), File.t() | File.path(), Keyword.t()) ::
+  @spec write(Enumerable.t(), FileSystem.t(), File.t() | String.t(), Keyword.t()) ::
           :ok | {:error, any}
   def write(stream, filesystem, file, opts \\ [])
 
@@ -51,7 +51,7 @@ defmodule Arrg.Storage.Implementation do
   @doc """
   Deletes a file on the file system.
   """
-  @spec delete(FileSystem.t(), File.t() | File.path(), Keyword.t()) :: :ok | {:error, any}
+  @spec delete(FileSystem.t(), File.t() | String.t(), Keyword.t()) :: :ok | {:error, any}
   def delete(filesystem, file, opts \\ [])
 
   def delete(%FileSystem{} = filesystem, %File{path: path}, opts),

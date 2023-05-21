@@ -7,10 +7,12 @@ defmodule ArrgWeb.Telemetry do
 
   import Telemetry.Metrics
 
+  @doc false
   def start_link(arg) do
     Supervisor.start_link(__MODULE__, arg, name: __MODULE__)
   end
 
+  @doc false
   @impl Supervisor
   def init(_arg) do
     children = [
@@ -24,6 +26,9 @@ defmodule ArrgWeb.Telemetry do
     Supervisor.init(children, strategy: :one_for_one)
   end
 
+  @doc """
+  A list of Telemetry metrics to monitor.
+  """
   def metrics do
     [
       # Phoenix Metrics

@@ -3,8 +3,12 @@ defmodule Arrg.Release do
   Used for executing DB release tasks when run in production without Mix
   installed.
   """
+
   @app :arrg
 
+  @doc """
+  Migrates the current database to the latest version.
+  """
   def migrate do
     load_app()
 
@@ -13,6 +17,9 @@ defmodule Arrg.Release do
     end
   end
 
+  @doc """
+  Rolls back a database to a specific version.
+  """
   def rollback(repo, version) do
     load_app()
     {:ok, _, _} = Ecto.Migrator.with_repo(repo, &Ecto.Migrator.run(&1, :down, to: version))
