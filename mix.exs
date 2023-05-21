@@ -48,6 +48,7 @@ defmodule Arrg.MixProject do
       {:ecto_sqlite3, ">= 0.0.0"},
       {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
       {:ex_doc, "~> 0.27", only: :dev, runtime: false},
+      {:ex_heroicons, "~> 2.0.0"},
       {:ex_machina, "~> 2.7.0", only: :test},
       {:excellent_migrations, "~> 0.1", only: [:dev, :test], runtime: false},
       {:floki, ">= 0.30.0", only: :test},
