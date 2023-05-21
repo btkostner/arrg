@@ -456,7 +456,7 @@ defmodule ArrgWeb.CoreComponents do
   def error(assigns) do
     ~H"""
     <p class="mt-3 flex gap-3 text-sm leading-6 text-rose-600 phx-no-feedback:hidden">
-      <Heroicons.LiveView.icon name="exclamation-circle-mini" type="solid" class="mt-0.5 h-5 w-5 flex-none" />
+      <Heroicons.LiveView.icon name="exclamation-circle" type="mini" class="mt-0.5 h-5 w-5 flex-none" />
       <%= render_slot(@inner_block) %>
     </p>
     """

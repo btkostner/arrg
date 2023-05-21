@@ -133,7 +133,6 @@ jobs:
         with:
           fail_on_error: true
           filter_mode: nofilter
-          hadolint_flags: --config .github/linters/.hadolint.yaml
           reporter: ${{ github.event_name == 'pull_request' && 'github-pr-review' || 'local' }}
 
   Lint_Doctor:

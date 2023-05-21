@@ -11,6 +11,8 @@
 #   - https://pkgs.org/ - resource for finding needed packages
 #   - Ex: hexpm/elixir:1.14.2-erlang-25.2-debian-bullseye-20221004-slim
 #
+# hadolint global ignore=DL3006,DL3008,DL3059
+#
 ARG ELIXIR_VERSION=1.14.2
 ARG OTP_VERSION=25.2
 ARG DEBIAN_VERSION=bullseye-20221004-slim
