@@ -13,6 +13,8 @@ defmodule Arrg.Storage.FileSystem do
           name: String.t(),
           type: atom(),
           implementation: struct(),
+          files: [Arrg.Storage.File],
+          scans: [Arrg.Storage.Scan],
           inserted_at: DateTime.t(),
           updated_at: DateTime.t()
         }
@@ -21,7 +23,7 @@ defmodule Arrg.Storage.FileSystem do
 
   @derive {Phoenix.Param, key: :name}
   @primary_key {:name, :string, autogenerate: false}
-  @foreign_key_type :name
+  @foreign_key_type :string
   schema "storage_file_systems" do
     field :type, Ecto.Enum, values: @types
 
@@ -33,6 +35,10 @@ defmodule Arrg.Storage.FileSystem do
       on_type_not_found: :raise,
       on_replace: :update
     )
+
+    has_many :files, Arrg.Storage.File, foreign_key: :file_system_name
+
+    has_many :scans, Arrg.Storage.Scan, foreign_key: :file_system_name
 
     timestamps()
   end

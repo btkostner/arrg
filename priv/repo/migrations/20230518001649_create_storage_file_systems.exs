@@ -11,7 +11,9 @@ defmodule Arrg.Repo.Migrations.CreateStorageFileSystems do
     end
 
     create table(:storage_files, primary_key: false) do
-      add :file_system, references(:storage_file_systems, column: :name, type: :string), primary_key: true
+      add :file_system_name, references(:storage_file_systems, column: :name, type: :string, on_delete: :delete_all),
+        primary_key: true
+
       add :path, :string, primary_key: true
 
       timestamps()

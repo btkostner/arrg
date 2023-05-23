@@ -16,7 +16,11 @@ defmodule Arrg.Storage.File do
 
   @primary_key false
   schema "storage_files" do
-    belongs_to :file_system, Arrg.Storage.FileSystem, references: :name, primary_key: true
+    belongs_to :file_system, Arrg.Storage.FileSystem,
+      foreign_key: :file_system_name,
+      references: :name,
+      primary_key: true
+
     field :path, :string, primary_key: true
 
     timestamps()

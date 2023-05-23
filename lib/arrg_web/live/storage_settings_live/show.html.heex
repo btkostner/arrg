@@ -16,6 +16,12 @@
   </:action>
 
   <:action>
+    <.button navigate={~p"/settings/storage/#{@file_system}/show/scan"} phx-click={JS.push_focus()}>
+      Scan storage
+    </.button>
+  </:action>
+
+  <:action>
     <.button navigate={~p"/settings/storage/#{@file_system}/show/edit"} phx-click={JS.push_focus()}>
       Edit storage
     </.button>
@@ -42,12 +48,27 @@
 
 <.modal
   :if={@live_action == :edit}
-  id="file-system-modal"
+  id="file-system-edit"
   show
   on_cancel={JS.patch(~p"/settings/storage/#{@file_system}")}
 >
   <.live_component
     module={ArrgWeb.StorageSettingsLive.FormComponent}
+    id={@file_system.name}
+    title={@page_title}
+    action={@live_action}
+    file_system={@file_system}
+  />
+</.modal>
+
+<.modal
+  :if={@live_action == :scan}
+  id="file-system-scan"
+  show
+  on_cancel={JS.patch(~p"/settings/storage/#{@file_system}")}
+>
+  <.live_component
+    module={ArrgWeb.StorageSettingsLive.ScanComponent}
     id={@file_system.name}
     title={@page_title}
     action={@live_action}

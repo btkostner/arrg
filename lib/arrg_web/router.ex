@@ -39,6 +39,7 @@ defmodule ArrgWeb.Router do
 
       live "/settings/storage/:name", StorageSettingsLive.Show, :show
       live "/settings/storage/:name/show/edit", StorageSettingsLive.Show, :edit
+      live "/settings/storage/:name/show/scan", StorageSettingsLive.Show, :scan
     end
   end
 

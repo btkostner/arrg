@@ -23,4 +23,5 @@ defmodule ArrgWeb.StorageSettingsLive.Show do
 
   defp page_title(:show), do: "Show Storage"
   defp page_title(:edit), do: "Edit Storage"
+  defp page_title(:scan), do: "Scan Storage"
 end
