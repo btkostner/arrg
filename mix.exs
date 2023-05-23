@@ -53,6 +53,7 @@ defmodule Arrg.MixProject do
       {:excellent_migrations, "~> 0.1", only: [:dev, :test], runtime: false},
       {:floki, ">= 0.30.0", only: :test},
       {:gettext, "~> 0.20"},
+      {:horde, "~> 0.8.5"},
       {:jason, "~> 1.2"},
       {:phoenix_ecto, "~> 4.4"},
       {:phoenix_html, "~> 3.3"},

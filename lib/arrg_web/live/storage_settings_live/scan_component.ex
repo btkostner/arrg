@@ -10,12 +10,9 @@ defmodule ArrgWeb.StorageSettingsLive.ScanComponent do
         Scan <%= @file_system.name %>
         <:subtitle>Syncs the Arrg file database with what currently exists.</:subtitle>
       </.header>
-1
-      <.simple_form for={@form} id="scan-form" phx-target={@myself} phx-submit="save">
-        <%= for file_system_form <- inputs_for @form, :file_system do %>
 
-        <% end %>
-        <.input type="hidden" field={@form[:file_system]} value={@file_system.name} />
+      <.simple_form for={@form} id="scan-form" phx-target={@myself} phx-submit="save">
+        <.input type="hidden" field={@form[:file_system_name]} value={@file_system.name} />
 
         <:actions>
           <.button phx-disable-with="Starting Scan...">Scan</.button>

@@ -14,6 +14,9 @@ defmodule Arrg.Application do
       Arrg.Repo,
       # Start the PubSub system
       {Phoenix.PubSub, name: Arrg.PubSub},
+      # Creates a task and registry for long running processes
+      {DynamicSupervisor, name: Arrg.TaskSupervisor},
+      {Horde.Registry, keys: :unique, members: :auto, name: Arrg.TaskRegistry},
       # Start the Endpoint (http/https)
       ArrgWeb.Endpoint
       # Start a worker by calling: Arrg.Worker.start_link(arg)

@@ -7,6 +7,8 @@ defmodule Arrg.Storage.Scan do
 
   import Ecto.Changeset
 
+  alias Arrg.Storage.ScanProcess
+
   @type t :: %__MODULE__{
           id: Ecto.UUID.t(),
           file_system: Arrg.Storage.FileSystem.t(),
@@ -35,9 +37,8 @@ defmodule Arrg.Storage.Scan do
   @doc false
   def changeset(scan, attrs) do
     scan
-    |> cast(attrs, [:results, :completed_at])
-    |> cast_assoc(:file_system)
-    |> validate_required([:file_system])
+    |> cast(attrs, [:file_system_name, :results, :completed_at])
+    |> validate_required([:file_system_name])
   end
 
   @doc """
@@ -47,6 +48,9 @@ defmodule Arrg.Storage.Scan do
     do: Enum.map(scans, &populate_fields/1)
 
   def populate_fields(scan) do
-    scan
+    case ScanProcess.get(scan.file_system) do
+      {:ok, pid} -> Map.put(scan, :pid, pid)
+      nil -> scan
+    end
   end
 end

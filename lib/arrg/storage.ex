@@ -9,6 +9,7 @@ defmodule Arrg.Storage do
 
   alias Arrg.Repo
   alias Arrg.Storage.FileSystem
+  alias Arrg.Storage.ScanProcess
   alias Arrg.Storage.Scan
 
   @doc """
@@ -179,6 +180,15 @@ defmodule Arrg.Storage do
     %Scan{}
     |> Scan.changeset(attrs)
     |> Repo.insert()
+    |> then(fn
+      {:ok, scan} ->
+        scan = Repo.preload(scan, [:file_system])
+        ScanProcess.create(scan.file_system)
+        {:ok, Scan.populate_fields(scan)} |> IO.inspect(label: "populated data")
+
+      other ->
+        other
+    end)
   end
 
   @doc """
@@ -197,6 +207,13 @@ defmodule Arrg.Storage do
     scan
     |> Scan.changeset(attrs)
     |> Repo.update()
+    |> then(fn
+      {:ok, scan} ->
+        {:ok, Scan.populate_fields(scan)}
+
+      other ->
+        other
+    end)
   end
 
   @doc """
