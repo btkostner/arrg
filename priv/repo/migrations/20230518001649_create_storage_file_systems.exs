@@ -15,6 +15,7 @@ defmodule Arrg.Repo.Migrations.CreateStorageFileSystems do
         primary_key: true
 
       add :path, :string, primary_key: true
+      add :mime_type, :string
 
       timestamps()
     end

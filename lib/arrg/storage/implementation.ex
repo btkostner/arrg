@@ -18,6 +18,10 @@ defmodule Arrg.Storage.Implementation do
     ]
   end
 
+  @spec glob(FileSystem.t(), String.t(), Keyword.t()) :: {:ok, Enumerable.t()} | {:error, any}
+  def glob(%FileSystem{implementation: %implementation{} = config}, glob, opts \\ []),
+    do: implementation.glob(config, glob, opts)
+
   @doc """
   Reads a file from the file system.
   """

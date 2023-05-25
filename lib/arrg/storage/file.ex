@@ -10,6 +10,7 @@ defmodule Arrg.Storage.File do
   @type t :: %__MODULE__{
           file_system: Arrg.Storage.FileSystem.t(),
           path: String.t(),
+          mime_type: String.t(),
           inserted_at: DateTime.t(),
           updated_at: DateTime.t()
         }
@@ -22,6 +23,7 @@ defmodule Arrg.Storage.File do
       primary_key: true
 
     field :path, :string, primary_key: true
+    field :mime_type, :string
 
     timestamps()
   end
@@ -29,7 +31,13 @@ defmodule Arrg.Storage.File do
   @doc false
   def changeset(file_system, attrs) do
     file_system
-    |> cast(attrs, [:file_system, :path])
+    |> cast(attrs, [:file_system, :path, :mime_type])
     |> validate_required([:file_system, :path])
+  end
+end
+
+defimpl String.Chars, for: Arrg.Storage.File do
+  def to_string(%Arrg.Storage.File{file_system_name: file_system_name, path: path, mime_type: mime_type}) do
+    "#{file_system_name}:#{path} (#{mime_type})"
   end
 end

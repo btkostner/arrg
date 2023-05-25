@@ -15,7 +15,7 @@ defmodule ArrgWeb.StorageSettingsLive.ScanComponent do
         <.input type="hidden" field={@form[:file_system_name]} value={@file_system.name} />
 
         <:actions>
-          <.button phx-disable-with="Starting Scan...">Scan</.button>
+          <.button disabled={not is_nil(@scan)} phx-disable-with="Scanning...">Scan</.button>
         </:actions>
       </.simple_form>
     </div>
@@ -28,17 +28,16 @@ defmodule ArrgWeb.StorageSettingsLive.ScanComponent do
     {:ok,
      socket
      |> assign(assigns)
+     |> assign(:scan, nil)
      |> assign_form(changeset)}
   end
 
   def handle_event("save", %{"scan" => scan_params}, socket) do
     case Storage.create_scan(scan_params) do
       {:ok, scan} ->
-        IO.inspect(scan, label: "created scan")
-        {:noreply, socket}
+        {:noreply, assign(socket, :scan, scan)}
 
       {:error, changeset} ->
-        IO.inspect(changeset, label: "full changeset")
         {:noreply, assign_form(socket, changeset)}
     end
   end

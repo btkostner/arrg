@@ -35,17 +35,35 @@ defmodule Arrg.Storage.LocalImplementation do
   def friendly_name, do: "Local"
 
   @doc """
+  Returns a list of files matching the given glob.
+  """
+  @impl Arrg.Storage.ImplementationBehaviour
+  def glob(%{root: root}, glob, _opts) do
+    results =
+      root
+      |> Path.join(glob)
+      |> Path.wildcard()
+      |> Enum.map(&Path.relative_to(&1, root))
+
+    {:ok, results}
+  end
+
+  @doc """
   Reads a given file from the local file system. Returns a stream
   of data.
   """
   @impl Arrg.Storage.ImplementationBehaviour
   def read(%{root: root}, path, _opts) do
-    stream =
-      root
-      |> Path.join(path)
-      |> File.stream!([], 2048)
+    full_path = Path.join(root, path)
 
-    {:ok, stream}
+    case File.stat(full_path) do
+      {:ok, %{type: :regular}} ->
+        stream = File.stream!(full_path, [:raw, read_ahead: 64], 64)
+        {:ok, stream}
+
+      _ ->
+        {:error, :enoent}
+    end
   catch
     e -> {:error, e}
   end
