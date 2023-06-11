@@ -6,6 +6,7 @@ defmodule Arrg.Storage.ScanProcess do
   use GenServer
 
   alias Arrg.Storage.File
+  alias Arrg.Storage.FileType
   alias Arrg.Storage.FileSystem
   alias Arrg.Storage.Implementation
 
@@ -90,10 +91,10 @@ defmodule Arrg.Storage.ScanProcess do
       stream
       |> Stream.take(1)
       |> Enum.at(0)
-      |> process_magic_number()
+      |> FileType.identify()
 
     file = %File{
-      file_system: file_system,
+      file_system_name: file_system.name,
       path: path,
       mime_type: type
     }
@@ -113,20 +114,4 @@ defmodule Arrg.Storage.ScanProcess do
           nil
       end
   end
-
-  defp process_magic_number(<<0x66, 0x4C, 0x61, 0x43>> <> _), do: "audio/x-flac"
-
-  defp process_magic_number(<<0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A>> <> _), do: "image/png"
-  defp process_magic_number(<<0xFF, 0xD8, 0xFF, 0xDB>> <> _), do: "image/jpeg"
-
-  defp process_magic_number(<<0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46, 0x49, 0x46, 0x00, 0x01>> <> _),
-    do: "image/jpeg"
-
-  defp process_magic_number(<<0xFF, 0xD8, 0xFF, 0xEE>> <> _), do: "image/jpeg"
-  defp process_magic_number(<<0xFF, 0xD8, 0xFF, 0xE1, _, _, 0x45, 0x78, 0x69, 0x66, 0x00, 0x00>> <> _), do: "image/jpeg"
-
-  defp process_magic_number(<<0xEF, 0xBB, 0xBF>> <> _), do: "text/plain"
-  defp process_magic_number(bytes) when is_binary(bytes), do: "text/plain"
-
-  defp process_magic_number(_bytes), do: nil
 end
