@@ -4,7 +4,6 @@ defmodule Arrg.Repo.Migrations.CreateStorageFileSystems do
   def change do
     create table(:storage_file_systems, primary_key: false) do
       add :name, :string, primary_key: true
-      add :type, :string, null: false
       add :implementation, :jsonb, null: false
 
       timestamps()

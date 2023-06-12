@@ -215,6 +215,7 @@ defmodule ArrgWeb.CoreComponents do
           <.button>Save</.button>
         </:actions>
       </.simple_form>
+
   """
   attr :for, :any, required: true, doc: "the datastructure for the form"
   attr :as, :any, default: nil, doc: "the server side parameter to collect all input under"

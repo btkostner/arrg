@@ -11,7 +11,7 @@ defmodule Arrg.Storage.ImplementationBehaviour do
 
   @callback friendly_name() :: String.t()
 
-  @callback glob(config(), String.t(), Keyword.t()) :: {:ok, Enumerable.t()} | {:error, any}
+  @callback scan(config(), String.t(), Keyword.t()) :: {:ok, Enumerable.t()} | {:error, any}
 
   @callback read(config(), String.t(), Keyword.t()) :: {:ok, Enumerable.t()} | {:error, any}
 

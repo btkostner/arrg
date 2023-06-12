@@ -38,11 +38,17 @@ defmodule Arrg.Storage.LocalImplementation do
   Returns a list of files matching the given glob.
   """
   @impl Arrg.Storage.ImplementationBehaviour
-  def glob(%{root: root}, glob, _opts) do
+  def scan(%{root: root}, prefix, _opts) do
     results =
       root
-      |> Path.join(glob)
+      |> Path.join("#{prefix}/**/*")
       |> Path.wildcard()
+      |> Enum.filter(fn path ->
+        case File.stat(path) do
+          {:ok, %{type: :regular}} -> true
+          _ -> false
+        end
+      end)
       |> Enum.map(&Path.relative_to(&1, root))
 
     {:ok, results}

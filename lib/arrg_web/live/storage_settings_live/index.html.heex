@@ -30,10 +30,6 @@
       <%= file_system.name %>
     </:col>
 
-    <:col :let={file_system} label="Type">
-      <%= file_system.type |> to_string() |> String.capitalize() %>
-    </:col>
-
     <:col :let={file_system} label="Implementation">
       <%= file_system.implementation.__struct__.friendly_name() |> String.capitalize() %>
     </:col>

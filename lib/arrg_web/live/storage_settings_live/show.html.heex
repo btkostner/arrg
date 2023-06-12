@@ -16,13 +16,13 @@
   </:action>
 
   <:action>
-    <.button navigate={~p"/settings/storage/#{@file_system}/show/scan"} phx-click={JS.push_focus()}>
+    <.button disabled={not is_nil(@pid)} phx-click="scan">
       Scan storage
     </.button>
   </:action>
 
   <:action>
-    <.button navigate={~p"/settings/storage/#{@file_system}/show/edit"} phx-click={JS.push_focus()}>
+    <.button navigate={~p"/settings/storage/#{@file_system}/update"} phx-click={JS.push_focus()}>
       Edit storage
     </.button>
   </:action>
@@ -30,7 +30,6 @@
 
 <.list class="px-4 py-4 sm:px-8">
   <:item title="Name"><%= @file_system.name %></:item>
-  <:item title="Type"><%= @file_system.type %></:item>
   <:item title="Implementation">
     <%= @file_system.implementation.__struct__.friendly_name() %>
   </:item>
@@ -54,21 +53,6 @@
 >
   <.live_component
     module={ArrgWeb.StorageSettingsLive.FormComponent}
-    id={@file_system.name}
-    title={@page_title}
-    action={@live_action}
-    file_system={@file_system}
-  />
-</.modal>
-
-<.modal
-  :if={@live_action == :scan}
-  id="file-system-scan"
-  show
-  on_cancel={JS.patch(~p"/settings/storage/#{@file_system}")}
->
-  <.live_component
-    module={ArrgWeb.StorageSettingsLive.ScanComponent}
     id={@file_system.name}
     title={@page_title}
     action={@live_action}

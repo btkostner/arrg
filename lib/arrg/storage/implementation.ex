@@ -18,9 +18,9 @@ defmodule Arrg.Storage.Implementation do
     ]
   end
 
-  @spec glob(FileSystem.t(), String.t(), Keyword.t()) :: {:ok, Enumerable.t()} | {:error, any}
-  def glob(%FileSystem{implementation: %implementation{} = config}, glob, opts \\ []),
-    do: implementation.glob(config, glob, opts)
+  @spec scan(FileSystem.t(), String.t(), Keyword.t()) :: {:ok, Enumerable.t()} | {:error, any}
+  def scan(%FileSystem{implementation: %implementation{} = config}, prefix, opts \\ []),
+    do: implementation.scan(config, prefix, opts)
 
   @doc """
   Reads a file from the file system.

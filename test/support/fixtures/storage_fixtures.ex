@@ -9,7 +9,6 @@ defmodule Arrg.StorageFixtures do
   def file_system_factory do
     %Arrg.Storage.FileSystem{
       name: sequence(:name, &"test-file-system-#{&1}"),
-      type: sequence(:type, ~w(movies shows music)a),
       implementation: build(:local_implementation)
     }
   end

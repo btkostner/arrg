@@ -93,7 +93,7 @@ defmodule ArrgWeb.StorageSettingsLiveTest do
         show_live
         |> element("a", "Edit")
         |> render_click()
-        |> follow_redirect(conn, ~p"/settings/storage/#{file_system}/show/edit")
+        |> follow_redirect(conn, ~p"/settings/storage/#{file_system}/update")
 
       assert show_live
              |> form("#file-system-form", file_system: @invalid_attrs)

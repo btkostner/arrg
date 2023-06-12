@@ -15,12 +15,6 @@ defmodule ArrgWeb.StorageSettingsLive.FormComponent do
 
       <.simple_form for={@form} id="file-system-form" phx-target={@myself} phx-change="validate" phx-submit="save">
         <.input field={@form[:name]} type="text" label="Name" />
-        <.input
-          field={@form[:type]}
-          options={~w(movies shows music)a |> Enum.map(&{&1 |> to_string() |> String.capitalize(), &1})}
-          type="select"
-          label="Type"
-        />
 
         <%= for implementation_form <- polymorphic_embed_inputs_for @form, :implementation do %>
           <.input

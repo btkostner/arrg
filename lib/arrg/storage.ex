@@ -5,12 +5,9 @@ defmodule Arrg.Storage do
   support other storage like backends (e.g. S3).
   """
 
-  import Ecto.Query
-
   alias Arrg.Repo
   alias Arrg.Storage.FileSystem
   alias Arrg.Storage.ScanProcess
-  alias Arrg.Storage.Scan
 
   @doc """
   Returns the list of storage file systems.
@@ -104,128 +101,46 @@ defmodule Arrg.Storage do
   end
 
   @doc """
-  Returns all of the known scans.
+  Gets a single scan process pid
+
+  Returns `nil` if a scan is not currently running.
 
   ## Examples
 
-      iex> list_scans()
-      [%Scan{}, ...]
+      iex> get_scan(file_system_name)
+      #PID<0.43.0>
+
+      iex> get_scan(file_system)
+      nil
 
   """
-  def list_scans do
-    Scan
-    |> Repo.all()
-    |> Repo.preload([:file_system])
-    |> Scan.populate_fields()
+  def get_scan(file_system) do
+    case ScanProcess.get(file_system) do
+      {:ok, pid} -> pid
+      _ -> nil
+    end
   end
 
   @doc """
-  Returns the list of scans for the given file system.
+  Creates a new scan of a file system. This will spawn a new process to scan the file system.
+
+  If the file system is already being scanned, this will return the existing scan process.
 
   ## Examples
 
-      iex> list_file_system_scans(file_system)
-      [%Scan{}, ...]
+      iex> create_scan(file_system)
+      {:ok, pid}
 
-      iex> list_file_system_scans("local")
-      [%Scan{}, ...]
-
-  """
-  def list_file_system_scans(%FileSystem{name: name}),
-    do: list_file_system_scans(name)
-
-  def list_file_system_scans(file_system) when is_binary(file_system) do
-    Scan
-    |> where([s], s.file_system == ^file_system)
-    |> Repo.all()
-    |> Repo.preload([:file_system])
-    |> Scan.populate_fields()
-  end
-
-  @doc """
-  Gets a single scan.
-
-  Raises if the scan does not exist.
-
-  ## Examples
-
-      iex> get_scan!(scan_uuid)
-      %Scan{}
+      iex> create_scan(file_system)
+      {:error, {:already_started, pid}}
 
   """
-  def get_scan!(id) do
-    Scan
-    |> Repo.get!(id)
-    |> Repo.preload([:file_system])
-    |> Scan.populate_fields()
-  end
-
-  @doc """
-  Creates a new scan of a file system. This will insert the initial record
-  into the database, as well as spawn the scan process.
-
-  Only one scan can be running at a time. This will return the latest scan
-  if it's still running.
-
-  ## Examples
-
-      iex> create_file_system(%{name: value})
-      {:ok, %FileSystem{}}
-
-      iex> create_file_system(%{name: bad_value})
-      {:error, ...}
-
-  """
-  def create_scan(attrs \\ %{}) do
-    %Scan{}
-    |> Scan.changeset(attrs)
-    |> Repo.insert()
-    |> then(fn
-      {:ok, scan} ->
-        scan = Repo.preload(scan, [:file_system])
-        ScanProcess.create(scan.file_system)
-        {:ok, Scan.populate_fields(scan)} |> IO.inspect(label: "populated data")
-
-      other ->
-        other
-    end)
-  end
-
-  @doc """
-  Updates the database scan record.
-
-  ## Examples
-
-      iex> update_scan(scan, %{completed_at: new_value})
-      {:ok, %Scan{}}
-
-      iex> update_scan(scan, %{completed_at: bad_value})
-      {:error, ...}
-
-  """
-  def update_scan(%Scan{} = scan, attrs) do
-    scan
-    |> Scan.changeset(attrs)
-    |> Repo.update()
-    |> then(fn
-      {:ok, scan} ->
-        {:ok, Scan.populate_fields(scan)}
-
-      other ->
-        other
-    end)
-  end
-
-  @doc """
-  Returns a data structure for tracking scan changes.
-
-  ## Examples
-
-      iex> change_scan(scan)
-      %Ecto.Changeset{...}
-
-  """
-  def change_scan(%Scan{} = scan, attrs \\ %{}) do
-    Scan.changeset(scan, attrs)
+  def create_scan(file_system) do
+    with {:error, error} <- ScanProcess.create(file_system) do
+      case get_scan(file_system) do
+        nil -> {:error, error}
+        pid -> {:ok, pid}
+      end
+    end
   end
 end

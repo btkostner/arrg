@@ -5,12 +5,12 @@ defmodule Arrg.Storage.ScanProcess do
 
   use GenServer
 
-  alias Arrg.Storage.File
-  alias Arrg.Storage.FileType
-  alias Arrg.Storage.FileSystem
-  alias Arrg.Storage.Implementation
-
   require Logger
+
+  alias Arrg.Storage.File
+  alias Arrg.Storage.FileSystem
+  alias Arrg.Storage.FileType
+  alias Arrg.Storage.Implementation
 
   @registry Arrg.TaskRegistry
   @supervisor Arrg.TaskSupervisor
@@ -71,7 +71,7 @@ defmodule Arrg.Storage.ScanProcess do
   def handle_continue(:run, state) do
     Logger.info("Running scan for #{state.file_system.name}")
 
-    with {:ok, files} <- Implementation.glob(state.file_system, "**/*") do
+    with {:ok, files} <- Implementation.scan(state.file_system, "/") do
       Logger.info("Processing #{length(files)} files")
 
       files
@@ -109,8 +109,11 @@ defmodule Arrg.Storage.ScanProcess do
           nil
 
         err ->
-          IO.inspect(err, label: "error")
-          Logger.warn("Unable to process file #{path} on #{file_system.name}", error: err)
+          Logger.warn("""
+          Unable to process file #{path} on #{file_system.name}:
+          #{err}
+          """)
+
           nil
       end
   end
