@@ -5,8 +5,11 @@ defmodule Arrg.Storage.ScanProcess do
 
   use GenServer
 
+  import Ecto.Query
+
   require Logger
 
+  alias Arrg.Repo
   alias Arrg.Storage.File
   alias Arrg.Storage.FileSystem
   alias Arrg.Storage.FileType
@@ -70,21 +73,31 @@ defmodule Arrg.Storage.ScanProcess do
   @impl GenServer
   def handle_continue(:run, state) do
     Logger.info("Running scan for #{state.file_system.name}")
+    %{file_system: %{name: file_system_name} = file_system} = state
 
-    with {:ok, files} <- Implementation.scan(state.file_system, "/") do
+    with {:ok, files} <- Implementation.scan(file_system, "/") do
       Logger.info("Processing #{length(files)} files")
+
+      now = DateTime.utc_now()
 
       files
       |> Flow.from_enumerable()
-      |> Flow.map(fn file -> process_file(file, state.file_system) end)
+      |> Flow.map(fn file -> process_file(file, state.file_system, now) end)
       |> Flow.reject(&is_nil/1)
-      |> Flow.run()
+      |> Flow.stream()
+      |> Enum.reduce(Ecto.Multi.new(), fn changeset, multi ->
+        Ecto.Multi.insert(multi, changeset.changes.path, changeset, on_conflict: :replace_all)
+      end)
+      |> Ecto.Multi.delete_all(:remove_old, fn _results ->
+        from(f in File, where: f.file_system_name == ^file_system_name and f.scanned_at > ^now)
+      end)
+      |> Repo.transaction(timeout: :infinity)
     end
 
     {:stop, :normal, state}
   end
 
-  defp process_file(path, file_system) do
+  defp process_file(path, file_system, now) do
     {:ok, stream} = Implementation.read(file_system, path)
 
     type =
@@ -93,15 +106,12 @@ defmodule Arrg.Storage.ScanProcess do
       |> Enum.at(0)
       |> FileType.identify()
 
-    file = %File{
+    File.changeset(%File{}, %{
       file_system_name: file_system.name,
       path: path,
-      mime_type: type
-    }
-
-    file |> to_string() |> Logger.debug()
-
-    file
+      mime_type: type,
+      scanned_at: now
+    })
   rescue
     err ->
       case err do
