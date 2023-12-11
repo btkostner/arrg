@@ -43,8 +43,8 @@ jobs:
         uses: google-github-actions/release-please-action@v3
         with:
           command: manifest
-          config-file: .release-please-config.json
-          manifest-file: .release-please-manifest.json
+          config-file: .github/config/release-please-config.json
+          manifest-file: .github/config/release-please-manifest.json
           release-type: simple
 
 name: Release
